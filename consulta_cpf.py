@@ -1,8 +1,14 @@
+"""Automação Selenium sobre uma página de CPFs fictícios de treinamento."""
+
 from pathlib import Path
 
 from selenium import webdriver
-from selenium.webdriver.support.ui import WebDriverWait
+from selenium.webdriver.common.by import By
 from selenium.webdriver.support import expected_conditions as EC
+from selenium.webdriver.support.ui import WebDriverWait
+
+BASE_DIR = Path(__file__).resolve().parent
+CPF_DE_TESTE = "11111111111"
 
 
 def abrir_navegador():
@@ -10,46 +16,48 @@ def abrir_navegador():
     navegador.maximize_window()
     return navegador
 
+
 def abrir_pagina(navegador):
-    caminho_html = Path(__file__).resolve().parent / "consulta_cpf.html"
-    if not caminho_html.exists():
-        raise FileNotFoundError(f"Arquivo HTML não encontrado: {caminho_html}")
-    navegador.get(caminho_html.as_uri())
+    pagina = BASE_DIR / "consulta_cpf.html"
+    if not pagina.is_file():
+        raise FileNotFoundError(f"Arquivo HTML não encontrado: {pagina}")
+    navegador.get(pagina.as_uri())
+
 
 def consultar_cpf(navegador, cpf):
-    campo_cpf = WebDriverWait(navegador, 10).until(EC.presence_of_element_located(("id", "cpf")))
-    campo_cpf.send_keys(cpf)
+    campo = WebDriverWait(navegador, 10).until(
+        EC.element_to_be_clickable((By.ID, "cpf"))
+    )
+    campo.clear()
+    campo.send_keys(cpf)
+    WebDriverWait(navegador, 10).until(
+        EC.element_to_be_clickable((By.ID, "consultar"))
+    ).click()
 
-    botao_consultar = WebDriverWait(navegador, 10).until(EC.element_to_be_clickable(("id", "consultar")))
-    botao_consultar.click()
 
 def obter_resultado(navegador):
-    resultado = WebDriverWait(navegador, 10).until(EC.presence_of_element_located(("id", "registro")))
+    resultado = WebDriverWait(navegador, 10).until(
+        EC.visibility_of_element_located((By.ID, "registro"))
+    )
     return resultado.text
 
+
 def main():
-    print("==========================")
-    print("SISTEMA DE CONSULTA DE CPF")
-
-    navegador = abrir_navegador()
-
+    navegador = None
     try:
-        print("\nAbrindo sistema de consulta...")
+        navegador = abrir_navegador()
         abrir_pagina(navegador)
-
-        cpf = "11111111111"
-
-        print(f"Consultando CPF: {cpf}")
-        consultar_cpf(navegador, cpf)
-
-        resultado = obter_resultado(navegador)
-
-        print("\nResultado da consulta:")
-        print("--------------------")
-        print(resultado)
-        print("--------------------")
+        consultar_cpf(navegador, CPF_DE_TESTE)
+        print("Resultado da consulta fictícia:")
+        print(obter_resultado(navegador))
+    except Exception as erro:
+        print(f"Erro durante o teste automatizado: {erro}")
+        return 1
     finally:
-        navegador.quit()
+        if navegador is not None:
+            navegador.quit()
+    return 0
+
 
 if __name__ == "__main__":
-    main()
+    raise SystemExit(main())
