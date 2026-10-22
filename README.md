@@ -29,6 +29,7 @@ busca_cpf/
 ├── consulta_cpf.py     # script principal com Selenium
 ├── consulta_cpf.html   # página local de treinamento
 ├── consulta_cpf.ipynb  # notebook de estudo
+├── requirements.txt    # bibliotecas necessárias
 └── README.md
 ```
 
@@ -53,6 +54,7 @@ O exemplo do script usa o CPF **11111111111**, presente apenas na base fictícia
 - Localizar elementos por `id`.
 - Usar `WebDriverWait` e condições de espera.
 - Separar a automação em funções e liberar o navegador com `try/finally`.
+- Esperar elementos clicáveis e resultados visíveis antes de prosseguir.
 
 ## Observações
 
