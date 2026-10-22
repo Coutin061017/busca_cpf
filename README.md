@@ -41,7 +41,7 @@ git clone https://github.com/Coutin061017/busca_cpf.git
 cd busca_cpf
 python -m venv .venv
 .venv\Scripts\Activate.ps1
-pip install selenium
+pip install -r requirements.txt
 python consulta_cpf.py
 ```
 
